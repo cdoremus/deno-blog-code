@@ -1,7 +1,17 @@
 /// <reference lib="dom" />
 
-import puppeteer, {Browser, Page} from "https://deno.land/x/puppeteer@14.1.1/mod.ts";
-import {describe, it, beforeEach, afterEach  } from "https://deno.land/std@0.151.0/testing/bdd.ts";
+import puppeteer, {
+  Browser,
+  Page,
+} from "https://deno.land/x/puppeteer@14.1.1/mod.ts";
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  it,
+} from "https://deno.land/std@0.151.0/testing/bdd.ts";
 import {
   assert,
   assertEquals,
@@ -15,7 +25,7 @@ import { readLines } from "https://deno.land/std@0.151.0/io/mod.ts";
  * @returns {{close: () => void}}: A handle to the server allowing closing of the server sub-process and
  * stdout/stderr within that.
  */
-export async function startAppServer(): Promise<{close: () => void}> {
+export async function startAppServer(): Promise<{ close: () => void }> {
   const serverProcess = Deno.run({
     // Fresh command line without the wait flag
     cmd: [Deno.execPath(), "run", "-A", "dev.ts"],
@@ -55,13 +65,19 @@ export async function startBrowser(): Promise<Browser> {
 }
 
 describe("Puppeteer e2e testing... ", () => {
-
-  let server: {close: () => void};
+  let server: { close: () => void };
   let browser: Browser;
   let page: Page;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     server = await startAppServer();
+  });
+
+  afterAll(async () => {
+    await server?.close();
+  });
+
+  beforeEach(async () => {
     browser = await startBrowser();
     page = await browser.newPage();
   });
@@ -69,32 +85,31 @@ describe("Puppeteer e2e testing... ", () => {
   afterEach(async () => {
     await page?.close();
     await browser?.close();
-    await server?.close();
   });
 
   it({
     name: "should display welcome message",
     fn: async () => {
-
       await page.setViewport({ width: 400, height: 200 });
       await page.goto("http://localhost:8000/", {
         waitUntil: "networkidle2",
       });
       const selection = await page.waitForSelector("body > div > p");
       if (selection) {
-        const text = await page?.evaluate((element: HTMLElement) => element.textContent,selection);
-        assert(text?.startsWith("Welcome"))
+        const text = await page?.evaluate(
+          (element: HTMLElement) => element.textContent,
+          selection,
+        );
+        assert(text?.startsWith("Welcome"));
       } else {
         fail(`ERROR: Selector not found`);
       }
-    }
+    },
   });
-
 
   it({
     name: "should decrement counter",
     fn: async () => {
-
       await page.setViewport({ width: 400, height: 200 });
       await page.goto("http://localhost:8000/", {
         waitUntil: "networkidle2",
@@ -110,17 +125,16 @@ describe("Puppeteer e2e testing... ", () => {
           selection,
         );
         // counter should be 2 now
-        assertEquals(text, "2")
+        assertEquals(text, "2");
       } else {
         fail(`ERROR: Selector not found`);
       }
-    }
+    },
   });
 
   it({
     name: "should increment counter",
     fn: async () => {
-
       await page.setViewport({ width: 400, height: 200 });
       await page.goto("http://localhost:8000/", {
         waitUntil: "networkidle2",
@@ -136,11 +150,10 @@ describe("Puppeteer e2e testing... ", () => {
           selection,
         );
         // counter should be 4 now
-        assertEquals(text, "4")
+        assertEquals(text, "4");
       } else {
         fail(`ERROR: Selector not found`);
       }
-    }
+    },
   });
-
 });
