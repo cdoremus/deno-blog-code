@@ -6,9 +6,7 @@ import puppeteer, {
 } from "https://deno.land/x/puppeteer@14.1.1/mod.ts";
 import {
   afterAll,
-  afterEach,
   beforeAll,
-  beforeEach,
   describe,
   it,
 } from "https://deno.land/std@0.151.0/testing/bdd.ts";
@@ -71,26 +69,20 @@ describe("Puppeteer e2e testing... ", () => {
 
   beforeAll(async () => {
     server = await startAppServer();
+    browser = await startBrowser();
+    page = await browser.newPage();
+    await page.setViewport({ width: 400, height: 200 });
   });
 
   afterAll(async () => {
-    await server?.close();
-  });
-
-  beforeEach(async () => {
-    browser = await startBrowser();
-    page = await browser.newPage();
-  });
-
-  afterEach(async () => {
     await page?.close();
     await browser?.close();
+    await server?.close();
   });
 
   it({
     name: "should display welcome message",
     fn: async () => {
-      await page.setViewport({ width: 400, height: 200 });
       await page.goto("http://localhost:8000/", {
         waitUntil: "networkidle2",
       });
@@ -110,7 +102,6 @@ describe("Puppeteer e2e testing... ", () => {
   it({
     name: "should decrement counter",
     fn: async () => {
-      await page.setViewport({ width: 400, height: 200 });
       await page.goto("http://localhost:8000/", {
         waitUntil: "networkidle2",
       });
@@ -135,7 +126,6 @@ describe("Puppeteer e2e testing... ", () => {
   it({
     name: "should increment counter",
     fn: async () => {
-      await page.setViewport({ width: 400, height: 200 });
       await page.goto("http://localhost:8000/", {
         waitUntil: "networkidle2",
       });
