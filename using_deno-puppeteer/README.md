@@ -12,14 +12,15 @@ cd using_deno-puppeteer
 
 ### Usage
 
+Run the Puppeteer tests:
+
+```
+deno task test
+```
+
 Launch the webapp:
 
 ```
 deno task start
 ```
 
-Run the Puppeteer tests:
-
-```
-deno task test
-```
