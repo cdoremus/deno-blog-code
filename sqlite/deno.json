@@ -1,0 +1,6 @@
+{
+  "tasks": {
+    "sd3": "deno run -A --unstable src/sqlite3-driver/sqlite3.ts",
+    "slite": "deno run -A --unstable src/deno-sqlite/sqlite.ts"
+  }
+}
