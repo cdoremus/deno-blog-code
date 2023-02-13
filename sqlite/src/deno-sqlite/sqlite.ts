@@ -1,4 +1,8 @@
-import { DB } from "https://deno.land/x/sqlite/mod.ts";
+/**
+ * This file creates a sqlite database table, inserts data into it and queries the data
+ * using the deno-sqlite library.
+ */
+import { DB } from "deno-sqlite";
 
 function run(db: DB): void {
   db.execute(`
@@ -8,13 +12,23 @@ function run(db: DB): void {
   )
 `);
 
-  // Run a simple query
+  // Insert data into the table
   for (const name of ["Peter Parker", "Clark Kent", "Bruce Wayne"]) {
     db.query("INSERT INTO people (name) VALUES (?)", [name]);
   }
 
-  // Print out data in table
+  // Run a query and print out the rows
+  console.log("Query using DB.query()");
+  const results = db.query<[number, string]>(
+    "SELECT id, name FROM people",
+  );
+
+  for (const [id, name] of results) {
+    console.log(`${id}: ${name}`);
+  }
+
   // Use a prepared statement
+  console.log("Query using a prepared statement");
   const query = db.prepareQuery<[number, string]>(
     "SELECT id, name FROM people",
   );
@@ -24,15 +38,12 @@ function run(db: DB): void {
   }
 
   query.finalize();
-
-  // for (const [id, name] of db.query("SELECT id, name FROM people")) {
-  //   console.log(`${id}: ${name}`);
-  // }
 }
 
 function main() {
   // Open a database
-  const db: DB = new DB("test.db");
+  // const db: DB = new DB("test.db");
+  const db: DB = new DB(":memory:");
   try {
     run(db);
   } finally {

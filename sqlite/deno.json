@@ -1,6 +1,12 @@
 {
   "tasks": {
-    "sd3": "deno run -A --unstable src/sqlite3-driver/sqlite3.ts",
-    "slite": "deno run -A --unstable src/deno-sqlite/sqlite.ts"
-  }
+    "sqlite3": "deno run -A --unstable ./src/sqlite3-driver/sqlite3.ts",
+    "update-sqlite3": "deno run -A --unstable ./src/sqlite3-driver/update-sqlite3.ts",
+    "delete-sqlite3": "deno run -A --unstable ./src/sqlite3-driver/delete-sqlite3.ts",
+    "sqlite": "deno run -A --unstable ./src/deno-sqlite/sqlite.ts",
+    "prepared-sqlite": "deno run -A --unstable ./src/deno-sqlite/prepared-sqlite.ts",
+    "delete-sqlite": "deno run -A --unstable ./src/deno-sqlite/delete-sqlite.ts",
+    "update-sqlite": "deno run -A --unstable ./src/deno-sqlite/update-sqlite.ts"
+  },
+  "importMap": "./import_map.json"
 }
