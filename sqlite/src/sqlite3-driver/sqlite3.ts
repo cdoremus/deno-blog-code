@@ -17,9 +17,12 @@ try {
 `,
   );
 
-  for (const name of ["Peter Parker", "Clark Kent", "Bruce Wayne"]) {
-    db.exec("INSERT INTO people (name) VALUES (?)", [name]);
-  }
+  const inserts = db.transaction((data: string[]) => {
+    for (const name of data) {
+      db.exec("INSERT INTO people (name) VALUES (?)", [name]);
+    }
+  });
+  inserts(["Peter Parker", "Clark Kent", "Bruce Wayne"]);
 
   let stmt = db.prepare("SELECT id, name FROM people");
 

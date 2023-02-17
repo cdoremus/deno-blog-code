@@ -12,10 +12,12 @@ function run(db: DB): void {
   )
 `);
 
-  // Insert data into the table
-  for (const name of ["Peter Parker", "Clark Kent", "Bruce Wayne"]) {
-    db.query("INSERT INTO people (name) VALUES (?)", [name]);
-  }
+  // Insert data within a transaction
+  db.transaction(() => {
+    for (const name of ["Peter Parker", "Clark Kent", "Bruce Wayne"]) {
+      db.query("INSERT INTO people (name) VALUES (?)", [name]);
+    }
+  });
 
   // Run a query and print out the rows
   console.log("Query using DB.query()");
