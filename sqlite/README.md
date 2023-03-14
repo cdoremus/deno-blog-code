@@ -2,7 +2,7 @@
 
 This repo present some examples of using SQLite with Deno to do database CRUD
 operations for the blog post
-[Using SQLite with Deno](https://deno-blog.com/Using_SQLite_With_Deno.2023-02-24).
+[Using SQLite with Deno](https://deno-blog.com/Using_SQLite_with_Deno.2023-02-24).
 There are two libraries demonstrated:
 
 - [deno-sqlite](https://deno.land/x/sqlite) - a lib that includes a sqlite
