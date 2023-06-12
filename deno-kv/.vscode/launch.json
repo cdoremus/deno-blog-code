@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Deno",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "run",
+        "--unstable",
+        "--inspect-brk",
+        "-A",
+        "pagination.ts"
+      ],
+      "attachSimplePort": 9229,
+      "stopOnEntry": true
+    }
+  ]
+}
