@@ -41,6 +41,16 @@ const users = [
     "name": "Olivia Miller",
     "age": 22,
   },
+  {
+    "id": 7,
+    "name": "Barbara Jones",
+    "age": 17,
+  },
+  {
+    "id": 8,
+    "name": "Craig Sampson",
+    "age": 33,
+  },
 ];
 
 // Insert users in a KV index
@@ -55,33 +65,33 @@ for (const user of users) {
   }
 }
 
-function getIter(cursor: string): Deno.KvListIterator<User> {
-  const optionsArg = cursor !== "" ? { limit: 2, cursor } : { limit: 2 };
+function getIterator(cursor: string, limit = 2): Deno.KvListIterator<User> {
+  const optionsArg = cursor !== "" ? { limit, cursor } : { limit: 2 };
   const iter = kv.list<User>({ prefix: ["user_by_age"] }, optionsArg);
   return iter;
 }
 
-async function printIter(iter: Deno.KvListIterator<User>): Promise<string> {
+async function printIterator(
+  iter: Deno.KvListIterator<User>,
+): Promise<{ cursor: string; found: boolean }> {
+  let found = false;
   for await (const userKv of iter) {
     const user = userKv.value as User;
     console.log(`${user.name}: ${user.age}`);
+    found = true;
   }
-  return iter.cursor;
+  const cursor = iter.cursor;
+  return { cursor, found };
 }
 
-// display users by age
+// print out users in batches of two
 let cursor = "";
-let iter = getIter(cursor);
-cursor = await printIter(iter);
-while (iter.next()) {
-  iter = getIter(cursor);
-  cursor = await printIter(iter);
-  const result = await iter.next();
-  // if (result.done) {
-  //   break;
-  // }
-  console.log("RESULT: ", result);
-  // if (result === undefined) {
-  //   break;
-  // }
+let iter = getIterator(cursor);
+await printIterator(iter);
+cursor = iter.cursor;
+while (true) {
+  iter = getIterator(cursor);
+  const iterRet = await printIterator(iter);
+  cursor = iterRet.cursor;
+  if (!iterRet.found) break;
 }
