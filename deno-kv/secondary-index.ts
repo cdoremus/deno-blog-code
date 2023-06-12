@@ -85,7 +85,7 @@ for (const player of players) {
 
 const findPlayersByPosition = async (position: Position) => {
   const iter = kv.list<Player>({ prefix: ["players_by_position", position] });
-  console.log(`\nLiverpool players in ${position} position:`);
+
   for await (const player of iter) {
     const playerPosition = await kv.get<Player>([
       "players_by_position",

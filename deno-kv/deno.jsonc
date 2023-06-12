@@ -1,9 +1,10 @@
 {
   "tasks": {
     "dev": "deno run --unstable --watch main.ts",
-    "aggregateFns": "deno run --unstable --watch aggregateFns.ts",
+    "min-max-sum": "deno run --unstable min-max-sum.ts",
     "page": "deno run --unstable pagination.ts",
     "crud": "deno run --unstable crud.ts",
+    "get-many": "deno run --unstable get-many.ts",
     "sort": "deno run --unstable sort.ts",
     "sort-dup": "deno run --unstable sort-dup.ts",
     "lists": "deno run --unstable lists.ts",
