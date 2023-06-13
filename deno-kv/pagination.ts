@@ -65,37 +65,51 @@ for (const user of users) {
   }
 }
 
+// fetch batch of 2 by default
 function getIterator(cursor: string, limit = 2): Deno.KvListIterator<User> {
-  const optionsArg = cursor !== "" ? { limit, cursor } : { limit: 2 };
+  const optionsArg = cursor !== "" ? { limit, cursor } : { limit };
   const iter = kv.list<User>({ prefix: ["user_by_age"] }, optionsArg);
   return iter;
 }
 
 async function printIterator(
-  iter: Deno.KvListIterator<User>,
+  iterator: Deno.KvListIterator<User>,
+  pageNum: number,
 ): Promise<{ cursor: string; found: boolean }> {
   let found = false;
   let cursor = "";
   let result = await iter.next();
+  const users = [];
   while (!result.done) {
-    cursor = iter.cursor;
+    cursor = iterator.cursor;
     // result.value returns full KvEntry object
     const user = result.value.value as User;
-    console.log(`${user.name}: ${user.age}`);
+    users.push(user);
+    // are there records affiliated with the iterator
     found = true;
     result = await iter.next();
+  }
+  if (users.length > 0) {
+    console.log(`Page ${pageNum}`);
+    for (const u of users) {
+      console.log(`${u.name} ${u.age}`);
+    }
   }
   return { cursor, found };
 }
 
 // print out users in batches of two
+const USERS_PER_PAGE = 3;
+let pageNum = 1;
 let cursor = "";
-let iter = getIterator(cursor);
-await printIterator(iter);
+let iter = getIterator(cursor, USERS_PER_PAGE);
+await printIterator(iter, pageNum);
+pageNum++;
 cursor = iter.cursor;
 while (true) {
-  iter = getIterator(cursor);
-  const iterRet = await printIterator(iter);
+  iter = getIterator(cursor, USERS_PER_PAGE);
+  const iterRet = await printIterator(iter, pageNum);
   cursor = iterRet.cursor;
   if (!iterRet.found) break;
+  pageNum++;
 }
