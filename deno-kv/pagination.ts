@@ -75,12 +75,16 @@ async function printIterator(
   iter: Deno.KvListIterator<User>,
 ): Promise<{ cursor: string; found: boolean }> {
   let found = false;
-  for await (const userKv of iter) {
-    const user = userKv.value as User;
+  let cursor = "";
+  let result = await iter.next();
+  while (!result.done) {
+    cursor = iter.cursor;
+    // result.value returns full KvEntry object
+    const user = result.value.value as User;
     console.log(`${user.name}: ${user.age}`);
     found = true;
+    result = await iter.next();
   }
-  const cursor = iter.cursor;
   return { cursor, found };
 }
 
