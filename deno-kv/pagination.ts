@@ -9,6 +9,7 @@ import { deleteAllRecords } from "./util.ts";
 
 const kv = await Deno.openKv();
 
+// get rid of previous records
 await deleteAllRecords();
 
 interface User {
@@ -60,7 +61,7 @@ const users = [
   },
 ];
 
-// Insert users in a KV index
+// Insert users in two KV indexes; one by id, the other by age
 for (const user of users) {
   const result = await kv.atomic()
     // check() calls omitted
@@ -76,12 +77,12 @@ for (const user of users) {
  * Obtains an iterator within a iteration series done by calling `Deno.Kv.list()` multiple times during
  * pagination. The start of an iteration series is signalled when the cursor value is an empty string.
  *
- * @param {string} cursor - signals the start of the group you are fetching in this call. The start of
+ * @param {string} cursor - signals where is a group of results you currently are located. The start of
  * iteration is signalled when `cursor` is an empty string.
- * @param {number} limit - the number of items to fetch
+ * @param {number} limit - the number of items per iteration
  * @param {Deno.KvKeyPart} - the prefix `list()` argument per iteration
- * @param {T} - the generic parameter indicating the type of the item being fetched
- * @returns {Deno.KvListIterator<T>} - iterator over items of T type
+ * @param {T} - the generic parameter indicating the type of the item being iterated
+ * @returns {Deno.KvListIterator<T>} - an iterator over items of T type
  */
 function getIterator<T>(
   cursor: string,
@@ -94,7 +95,7 @@ function getIterator<T>(
 }
 
 /**
- * Pulls out the data (items) contained in an iterator and from the call to `getIterator()`
+ * Pulls out the data (items) contained in an iterator from a call to `getIterator()`
  * and returns them with the latest cursor string.
  *
  * @param {T} - the type being iterated
@@ -136,10 +137,10 @@ const keyPart = ["user_by_age"]; // index key to sort users by age
 let pageNum = 1; // in a webapp, this will be a query param
 let cursor = ""; // in a webapp, this will be a query param
 let iter = getIterator<User>(cursor, USERS_PER_PAGE, keyPart);
-const processed = await processIterator(iter);
-printUsers(processed.items as User[], pageNum);
-pageNum++; // in a webapp. increment this in the handler
-cursor = iter.cursor; // in a webapp, reset this in the handler
+const processedItems = await processIterator(iter);
+printUsers(processedItems.items as User[], pageNum);
+pageNum++; // in a webapp. increment this in the handler for query param
+cursor = processedItems.cursor; // in a webapp, set this in the handler for query param
 while (cursor !== "") {
   iter = getIterator<User>(cursor, USERS_PER_PAGE, keyPart);
   const iterRet = await processIterator<User>(iter);
