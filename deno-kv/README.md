@@ -46,3 +46,7 @@
   chained to the `atomic` function.
 
 `deno run --unstable min-max-sum.ts`
+
+**queue**: shows KV queue functionality
+
+`deno run --unstable queue.ts`

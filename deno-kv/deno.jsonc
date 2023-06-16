@@ -10,6 +10,7 @@
     "sec-index": "deno run --unstable secondary-index.ts",
     "history": "deno run --unstable record-history.ts",
     "key-order": "deno run --unstable key-order.ts",
-    "atomic": "deno run --unstable atomic.ts"
+    "atomic": "deno run --unstable atomic.ts",
+    "queue": "deno run --unstable queue.ts"
   }
 }
