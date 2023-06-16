@@ -1,7 +1,7 @@
-import { deleteAllRecords, showAllRecords, showRecords } from "./util.ts";
 /**
- * Querying multiple records using list and getMany
+ * Querying multiple records using the `list()` method.
  */
+import { deleteAllRecords, showRecords } from "./util.ts";
 
 // User type
 interface User {
@@ -55,6 +55,7 @@ const users: User[] = [
 
 console.log("DELETE ALL PREVIOUS RECORDS");
 await deleteAllRecords();
+
 // open a connection to Deno KV
 const kv = await Deno.openKv();
 
@@ -65,13 +66,13 @@ for await (const user of users) {
 
 // Get users with the 'user' role
 console.log("USER ROLE");
-await showRecords(["users", "user"]);
+await showRecords<User>(["users", "user"], ["name"]);
 
 // Get users with the 'admin' role
 console.log("ADMIN ROLE");
-await showRecords(["users", "admin"]);
+await showRecords(["users", "admin"], ["name"]);
 
-// Using 'start' and 'end' as a list argument
+// Use 'start' and 'end' as a list argument
 
 // create a `user_by_name` index
 for await (const user of users) {
@@ -81,11 +82,12 @@ for await (const user of users) {
   kv.set(["user_by_name", lname, fname], user);
 }
 
-console.log("USERS FROM DOW TO ZOZOS");
+console.log("USERS START AT DOW AND END JUST BEFORE ZOZOS");
 const rows = kv.list({
   start: ["user_by_name", "Dow"],
   end: ["user_by_name", "Zozos"],
 });
 for await (const row of rows) {
-  console.log(JSON.stringify(row));
+  const user = row.value as User;
+  console.log(user.name);
 }

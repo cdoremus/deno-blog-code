@@ -1,3 +1,6 @@
+/**
+ * Demonstrates how to use the `min`, `max` and `sum` methods chained to `atomic()`.
+ */
 import { assert } from "https://deno.land/std@0.153.0/testing/asserts.ts";
 const kv = await Deno.openKv();
 
@@ -44,7 +47,7 @@ console.log(
 // Get rid of old indexes
 await deleteOldData();
 
-//shopping cart item
+// Now, lets calculate, the max, min and sum of shopping cart item prices
 interface CartItem {
   userId: string;
   itemDesc: string;

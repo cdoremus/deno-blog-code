@@ -12,7 +12,7 @@
         "--unstable",
         "--inspect-brk",
         "-A",
-        "pagination.ts"
+        "key-order.ts"
       ],
       "attachSimplePort": 9229,
       "stopOnEntry": true
