@@ -14,7 +14,7 @@
 
 `deno run --unstable get-many.ts`
 
-- **atomic**: Shows how to use transactions using the KC `atomic()` method
+- **atomic**: Shows how to do transactions using the KV `atomic()` method
 
 `deno run --unstable atomic.ts`
 

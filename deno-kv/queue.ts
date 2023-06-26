@@ -1,68 +1,52 @@
+/**
+ * Demonstrating KV queueing via `Deno.Kv.enqueue()` and `Deno.Kv.listenQueue()`.
+ *
+ * You will need to Ctrl-C to stop the program since the listeners are
+ * always active while the program runs.
+ */
 import { deleteAllRecords } from "./util.ts";
 
-interface Deferred<T> extends Promise<T> {
-  readonly state: "pending" | "fulfilled" | "rejected";
-  resolve(value?: T | PromiseLike<T>): void;
-  // deno-lint-ignore no-explicit-any
-  reject(reason?: any): void;
-}
-
-function deferred<T>(): Deferred<T> {
-  let methods;
-  let state = "pending";
-  const promise = new Promise<T>((resolve, reject): void => {
-    methods = {
-      async resolve(value: T | PromiseLike<T>) {
-        await value;
-        state = "fulfilled";
-        resolve(value);
-      },
-      // deno-lint-ignore no-explicit-any
-      reject(reason?: any) {
-        state = "rejected";
-        reject(reason);
-      },
-    };
-  });
-  Object.defineProperty(promise, "state", { get: () => state });
-  return Object.assign(promise, methods) as Deferred<T>;
+interface QueueMessage {
+  key: Deno.KvKey;
+  value: unknown;
 }
 
 await deleteAllRecords();
 
 const kv = await Deno.openKv();
-const promise = deferred();
 
 kv.listenQueue(async (msg: unknown) => {
-  await kv.set(["foo"], msg);
-  console.log("Message delivered: ", msg);
-  promise.resolve();
+  const queueMsg = msg as QueueMessage;
+  console.log("Queued Msg: ", queueMsg);
+  await kv.set(queueMsg.key, queueMsg.value);
+  console.log("Value delivered: ", queueMsg);
 });
 
+// Enqueue first message
 const res = await kv.enqueue(
-  "foobar", /*, {
-  delay: 1000,
-  keysIfUndelivered: [["queue_failed", "a"], ["queue_failed", "b"]],
-}*/
-);
-console.log("Queue result: ", res);
-
-const msg1 = await kv.get(["foo"]);
-
-console.log(`Enqueued message 1: ${JSON.stringify(msg1)}`);
-
-await kv.enqueue(
-  "baz!!",
+  { key: ["test1"], value: "testing 1,2,3" },
   {
     delay: 1000,
-    keysIfUndelivered: [["queue_failed", "a"], ["queue_failed", "b"]],
+    keysIfUndelivered: [["queue_failed", "test1`"], ["queue_failed", "test2"]],
+  },
+);
+console.log("Queue result 1: ", res);
+
+let msg1 = await kv.get(["test1"]);
+
+console.log(`Enqueued value 1: ${JSON.stringify(msg1)}`);
+
+// Enqueue second message
+await kv.enqueue(
+  { key: ["test1"], value: "testing 4,5,6" },
+  {
+    delay: 1000,
+    keysIfUndelivered: [["queue_failed", "test3`"], ["queue_failed", "test4"]],
   },
 );
 
-kv.close(); // needed otherwise the console hangs because queue listener is still listening
+console.log("Queue result 2: ", res);
 
-const kv2 = await Deno.openKv();
+msg1 = await kv.get(["test1"]);
 
-const msg2 = await kv2.get(["foo"]);
-
-console.log(`Enqueued message 2: ${JSON.stringify(msg2)}`);
+console.log(`Enqueued value 2: ${JSON.stringify(msg1)}`);
