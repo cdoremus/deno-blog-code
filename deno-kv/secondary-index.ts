@@ -12,7 +12,7 @@ interface Player {
   position: Position;
 }
 
-// Players on the Liverpool Premier League team circa Sept 2021 (via ChatGPT)
+// Players on the Liverpool Premier League team
 const players: Player[] = [
   {
     "name": "Alisson Becker",
@@ -43,7 +43,7 @@ const players: Player[] = [
     "position": "Midfielder",
   },
   {
-    "name": "Georginio Wijnaldum",
+    "name": "Harvey Elliot",
     "position": "Midfielder",
   },
   {
@@ -51,7 +51,7 @@ const players: Player[] = [
     "position": "Forward",
   },
   {
-    "name": "Sadio Mane",
+    "name": "Cody Gakpo",
     "position": "Forward",
   },
   {
