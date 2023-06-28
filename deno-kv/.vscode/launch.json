@@ -12,7 +12,7 @@
         "--unstable",
         "--inspect-brk",
         "-A",
-        "key-order.ts"
+        "queue.ts"
       ],
       "attachSimplePort": 9229,
       "stopOnEntry": true
