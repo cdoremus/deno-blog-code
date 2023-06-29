@@ -67,10 +67,9 @@ for (const user of users) {
     .set(["user", user.id], user)
     .set(["user_by_age", user.age, user.id], user)
     .commit();
-  console.log("OK: ", result.ok);
-  // if (!result.ok) {
-  //   throw new Error(`Problem persisting user ${user.name}`);
-  // }
+  if (!result.ok) {
+    throw new Error(`Problem persisting user ${user.name}`);
+  }
 }
 
 /**
