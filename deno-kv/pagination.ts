@@ -7,8 +7,6 @@
 
 import { deleteAllRecords } from "./util.ts";
 
-const kv = await Deno.openKv();
-
 // get rid of previous records
 await deleteAllRecords();
 
@@ -61,16 +59,18 @@ const users = [
   },
 ];
 
+const kv = await Deno.openKv();
 // Insert users in two KV indexes; one by id, the other by age
 for (const user of users) {
   const result = await kv.atomic()
-    // check() calls omitted
+    // check() not called since this is an insert
     .set(["user", user.id], user)
     .set(["user_by_age", user.age, user.id], user)
     .commit();
-  if (!result.ok) {
-    throw new Error(`Problem persisting user ${user.name}`);
-  }
+  console.log("OK: ", result.ok);
+  // if (!result.ok) {
+  //   throw new Error(`Problem persisting user ${user.name}`);
+  // }
 }
 
 /**
@@ -132,15 +132,15 @@ function printUsers(users: User[], pageNum: number) {
 }
 
 // print out users in batches of USERS_PER_PAGE
-const USERS_PER_PAGE = 3; // aka page size
+const USERS_PER_PAGE = 3; // a.k.a. page size
 const keyPart = ["user_by_age"]; // index key to sort users by age
 let pageNum = 1; // in a webapp, this will be a query param
 let cursor = ""; // in a webapp, this will be a query param
 let iter = getIterator<User>(cursor, USERS_PER_PAGE, keyPart);
 const processedItems = await processIterator(iter);
 printUsers(processedItems.items as User[], pageNum);
-pageNum++; // in a webapp. increment this in the handler for query param
-cursor = processedItems.cursor; // in a webapp, set this in the handler for query param
+pageNum++; // in a webapp. increment this in the handler as a query param
+cursor = processedItems.cursor; // in a webapp, set this in the handler as a query param
 while (cursor !== "") {
   iter = getIterator<User>(cursor, USERS_PER_PAGE, keyPart);
   const iterRet = await processIterator<User>(iter);
@@ -151,3 +151,17 @@ while (cursor !== "") {
   }
   pageNum++;
 }
+/*
+EXPECTED RESULTS:
+Page 1
+Barbara Jones 17
+Sophia Jackson 19
+Olivia Miller 22
+Page 2
+John Doe 25
+Emma Smith 32
+Craig Sampson 33
+Page 3
+William Davis 37
+Michael Brown 40
+*/

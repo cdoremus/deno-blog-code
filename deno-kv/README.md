@@ -1,6 +1,6 @@
 # Code for blog post: A Comprehensive Guide to Deno KV
 
-## Deno tasks
+## Deno tasks to run the code example files
 
 - **crud**: shows how to do CRUD operations using KV
 
@@ -47,6 +47,6 @@
 
 `deno run --unstable min-max-sum.ts`
 
-**queue**: shows KV queue functionality
+- **queue**: shows KV queue functionality
 
 `deno run --unstable queue.ts`
