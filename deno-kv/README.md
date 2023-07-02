@@ -1,4 +1,6 @@
-# Code for blog post: A Comprehensive Guide to Deno KV
+## Code for Craig's Deno Diary blog post:
+
+## [A Comprehensive Guide to Deno KV](https://deno-blog-stage.deno.dev/A_Comprehensive_Guide_to_Deno_KV.2023-06-30)
 
 ## Deno tasks to run the code example files
 
