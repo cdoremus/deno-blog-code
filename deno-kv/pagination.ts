@@ -110,7 +110,7 @@ async function processIterator<T>(
   while (!result.done) {
     cursor = iterator.cursor;
     // result.value returns full KvEntry object
-    const item = result.value.value;
+    const item = result.value.value as T;
     items.push(item as T);
     result = await iter.next();
   }
@@ -136,7 +136,7 @@ const keyPart = ["user_by_age"]; // index key to sort users by age
 let pageNum = 1; // in a webapp, this will be a query param
 let cursor = ""; // in a webapp, this will be a query param
 let iter = getIterator<User>(cursor, USERS_PER_PAGE, keyPart);
-const processedItems = await processIterator(iter);
+const processedItems = await processIterator<User>(iter);
 printUsers(processedItems.items as User[], pageNum);
 pageNum++; // in a webapp. increment this in the handler as a query param
 cursor = processedItems.cursor; // in a webapp, set this in the handler as a query param
