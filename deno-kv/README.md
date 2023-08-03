@@ -52,3 +52,7 @@
 - **queue**: shows KV queue functionality
 
 `deno run --unstable queue.ts`
+
+- **count**: how to keep track of the KV record count
+
+`deno run --unstable count.ts`
